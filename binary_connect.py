@@ -32,10 +32,10 @@ import lasagne
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 
 def hard_sigmoid(x):
-    return T.clip((x+1.)/2.,0,1)
+    return T.clip((x+1.)/2.,0,1) # return (x+1.)/2 or 0 or 1
 
 # The binarization function
-def binarization(W,H,binary=True,deterministic=False,stochastic=False,srng=None):
+def binarization(W,H,binary=True,deterministic=False,stochastic=False,srng=None): # 二值化
     
     # (deterministic == True) <-> test-time <-> inference-time
     if not binary or (deterministic and stochastic):
@@ -48,18 +48,18 @@ def binarization(W,H,binary=True,deterministic=False,stochastic=False,srng=None)
         Wb = hard_sigmoid(W/H)
         
         # Stochastic BinaryConnect
-        if stochastic:
+        if stochastic:  # 如果随机
         
             # print("stoch")
-            Wb = T.cast(srng.binomial(n=1, p=Wb, size=T.shape(Wb)), theano.config.floatX)
+            Wb = T.cast(srng.binomial(n=1, p=Wb, size=T.shape(Wb)), theano.config.floatX) # Casted to Float
 
         # Deterministic BinaryConnect (round to nearest)
-        else:
+        else:  # 如果确定
             # print("det")
-            Wb = T.round(Wb)
+            Wb = T.round(Wb) # Rounded Int
         
         # 0 or 1 -> -1 or 1
-        Wb = T.cast(T.switch(Wb,H,-H), theano.config.floatX)
+        Wb = T.cast(T.switch(Wb,H,-H), theano.config.floatX)  # 范围转回[-1,1]
     
     return Wb
 
