@@ -34,8 +34,8 @@ from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 def hard_sigmoid(x):
     return T.clip((x+1.)/2.,0,1) # return (x+1.)/2 or 0 or 1
 
-# The binarization function
-def binarization(W,H,binary=True,deterministic=False,stochastic=False,srng=None): # 二值化
+# The binarization function （二值化）
+def binarization(W,H,binary=True,deterministic=False,stochastic=False,srng=None):
     
     # (deterministic == True) <-> test-time <-> inference-time
     if not binary or (deterministic and stochastic):
@@ -48,13 +48,13 @@ def binarization(W,H,binary=True,deterministic=False,stochastic=False,srng=None)
         Wb = hard_sigmoid(W/H)
         
         # Stochastic BinaryConnect
-        if stochastic:  # 如果随机
+        if stochastic:  # 如果是随机性
         
             # print("stoch")
             Wb = T.cast(srng.binomial(n=1, p=Wb, size=T.shape(Wb)), theano.config.floatX) # Casted to Float
 
         # Deterministic BinaryConnect (round to nearest)
-        else:  # 如果确定
+        else:  # 如果是确定性
             # print("det")
             Wb = T.round(Wb) # Rounded Int
         
@@ -64,7 +64,7 @@ def binarization(W,H,binary=True,deterministic=False,stochastic=False,srng=None)
     return Wb
 
 # This class extends the Lasagne DenseLayer to support BinaryConnect
-class DenseLayer(lasagne.layers.DenseLayer):
+class DenseLayer(lasagne.layers.DenseLayer): 
     
     def __init__(self, incoming, num_units, 
         binary = True, stochastic = True, H=1.,W_LR_scale="Glorot", **kwargs):
